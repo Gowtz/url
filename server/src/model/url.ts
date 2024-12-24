@@ -1,12 +1,15 @@
-import mongoose, { Document, Model } from "mongoose";
-import { urlSchema } from "../lib/zod";
+import mongoose, { Document, Schema, Model } from "mongoose";
+import { urlschema } from "../lib/zod";
 import { z } from "zod";
 import { v4 as uudi } from "uuid";
 import { URL } from "..";
 import crypto from "crypto";
 
-export type UrlsType = z.infer<typeof urlSchema>;
-export interface UrlsDocument extends Document, UrlsType {}
+const urlCustom = urlschema.omit({ authorID: true });
+export type UrlsType = z.infer<typeof urlCustom>;
+export interface UrlsDocument extends Document, UrlsType {
+  authorID: object;
+}
 export interface UrlsModelType extends Model<UrlsType> {
   addUrl({
     authorID,
@@ -22,7 +25,7 @@ export interface UrlsModelType extends Model<UrlsType> {
 
 const urlsSchema = new mongoose.Schema<UrlsDocument>({
   urlID: { type: String, required: true, unique: true },
-  authorID: {},
+  authorID: { type: Schema.Types.ObjectId, ref: "User" },
   url: { type: String, required: true },
   shortURL: { type: String },
   createdAt: {
@@ -45,7 +48,7 @@ urlsSchema.statics.addUrl = async function ({
   topic?: string;
   alias?: string;
 }) {
-  const currentUrls: UrlsType = {
+  const currentUrl: z.infer<typeof urlschema> = {
     urlID: uudi().replace(/-/g, "").slice(0.6),
     authorID,
     url,
@@ -54,10 +57,10 @@ urlsSchema.statics.addUrl = async function ({
     createdAt: new Date(),
   };
 
-  this.create(currentUrls);
+  this.create(currentUrl);
 };
 
-const Urls = mongoose.model<UrlsType>("Urls", urlsSchema);
+const Urls = mongoose.model<UrlsType | UrlsModelType>("Urls", urlsSchema);
 export function generateHash(input: string, len: number) {
   const hash = crypto.createHash("sha256").update(input).digest("base64url");
   return hash.slice(0, len);

@@ -9,7 +9,7 @@ export const userSchema = z.object({
   avatar: z.string(),
 });
 
-export const urlSchema = z.object({
+export const urlschema = z.object({
   urlID: z.string(),
   authorID: z.string(),
   url: z.string().url(),
@@ -22,7 +22,7 @@ export const analyticsSchema = z.object({
   clickID: z.string(),
   urlID: z.string(),
   userID: z.string(),
-  timeStamp: z.string(),
+  timeStamp: z.date(),
   osType: z.string(),
   deviceType: z.string(),
 });
