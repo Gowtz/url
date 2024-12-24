@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc -b && node dist",
-    "dev": "tsc -w & nodemon dist"
+    "dev": "tsc -w & nodemon dist",
+    "lint": "eslint src"
   },
   "keywords": [],
   "author": "",
@@ -15,13 +16,18 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "pg": "^8.13.1"
+    "mongoose": "^8.9.2",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
-    "@types/pg": "^8.11.10",
+    "@types/mongoose": "^5.11.97",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.16",
     "eslint": "^9.17.0",
     "globals": "^15.14.0",
     "typescript-eslint": "^8.18.2"
