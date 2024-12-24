@@ -1,13 +1,13 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 
 // Define an interface for the User document
-export interface IUser extends Document {
+export interface UserType extends Document {
   googleId: string;
   name: string;
   email: string;
   avatar: string;
 }
-export interface IUserModel extends Model<IUser> {
+export interface UserModelType extends Model<UserType> {
   findOrCreate({
     googleId,
     email,
@@ -18,10 +18,10 @@ export interface IUserModel extends Model<IUser> {
     email: string;
     name: string;
     avatar?: string;
-  }): Promise<IUser>;
+  }): Promise<UserType>;
 }
 // Create a schema for the User model
-const userSchema = new Schema<IUser>({
+const userSchema = new mongoose.Schema<UserType>({
   googleId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -40,7 +40,6 @@ userSchema.statics.findOrCreate = async function ({
   name: string;
   avatar: string;
 }) {
-  console.log(googleId);
   let user = await this.findOne({ googleId });
   if (!user) {
     user = await this.create({ googleId, name, email, avatar });
@@ -49,5 +48,5 @@ userSchema.statics.findOrCreate = async function ({
 };
 
 // Create the User model
-const User = mongoose.model<IUser, IUserModel>("User", userSchema);
+const User = mongoose.model<UserType, UserModelType>("User", userSchema);
 export default User;

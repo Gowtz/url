@@ -2,7 +2,6 @@ import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import { URL } from "..";
 import User from "../model/user";
-console.log(URL);
 
 // // Serialize user into session
 passport.serializeUser((user: any, cb: Function) => {
@@ -37,7 +36,6 @@ passport.use(
     ) => {
       try {
         // Assuming User.findOrCreate is a method that accepts a googleId and returns a user or creates one
-        console.log(profile);
         const user = await User.findOrCreate({
           googleId: profile.id,
           email: profile.emails?.[0].value as string,
