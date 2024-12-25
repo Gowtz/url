@@ -21,7 +21,7 @@ export const urlschema = z.object({
 export const analyticsSchema = z.object({
   clickID: z.string(),
   urlID: z.string(),
-  userID: z.string(),
+  user: z.string(),
   timeStamp: z.date(),
   osType: z.string(),
   deviceType: z.string(),

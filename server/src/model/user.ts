@@ -1,6 +1,5 @@
 import mongoose, { Document, Model } from "mongoose";
 
-// Define an interface for the User document
 export interface UserType extends Document {
   googleId: string;
   name: string;

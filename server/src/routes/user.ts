@@ -12,12 +12,12 @@ router.get(
     ],
   }),
 );
+// Callback URL
 router.get(
   "/api/auth/callback/google",
   passport.authenticate("google", { failureRedirect: "/not-authenticated" }),
   function (_req, res) {
-    // Successful authentication, redirect home.
-    res.redirect("/");
+    res.status(200).json({ msg: "Authenticated" });
   },
 );
 export default router;

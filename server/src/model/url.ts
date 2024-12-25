@@ -4,25 +4,36 @@ import { z } from "zod";
 import { v4 as uuid } from "uuid";
 import { URL } from "..";
 import crypto from "crypto";
+import { inputURLSchema } from "../controllers/url";
 
-const urlCustom = urlschema.omit({ authorID: true });
-export type UrlsType = z.infer<typeof urlCustom>;
-export interface UrlsDocument extends Document, UrlsType {
-  authorID: object;
+//Generate Has for the Url
+export function generateHash(input: string, len: number) {
+  const hash = crypto.createHash("sha256").update(input).digest("base64url");
+  return hash.slice(0, len);
 }
-export interface UrlsModelType extends Model<UrlsType> {
+
+// Get types from ZOD
+export type UrlsType = z.infer<typeof urlschema>;
+
+// Document Type
+export interface UrlsDocument extends Document, Omit<UrlsType, "authorID"> {
+  authorID: mongoose.Types.ObjectId;
+}
+
+// Model Type
+export interface UrlsModelType extends Model<UrlsDocument> {
+  getUrl({ short }: { short: string }): Promise<UrlsDocument | null>;
   addUrl({
-    authorID,
-    url,
+    longUrl,
+    alias,
     topic,
-  }: {
+    authorID,
+  }: z.infer<typeof inputURLSchema> & {
     authorID: string;
-    url: string;
-    topic?: string;
-    alias?: string;
-  }): Promise<UrlsType>;
+  }): Promise<UrlsDocument>;
 }
 
+// Creaet a schema for the Urls Model
 const urlsSchema = new mongoose.Schema<UrlsDocument>({
   urlID: { type: String, required: true, unique: true },
   authorID: { type: Schema.Types.ObjectId, ref: "User" },
@@ -37,32 +48,35 @@ const urlsSchema = new mongoose.Schema<UrlsDocument>({
   },
 });
 
-urlsSchema.statics.addUrl = async function ({
-  authorID,
-  url,
-  topic,
-  alias,
-}: {
-  authorID: string;
-  url: string;
-  topic?: string;
-  alias?: string;
-}) {
-  const currentUrl: z.infer<typeof urlschema> = {
-    urlID: uuid().replace(/-/g, "").slice(0.6),
-    authorID,
-    url,
-    topic: topic ? topic : "global",
-    shortURL: `${URL}/${alias ? alias : generateHash(url, 6)}`,
-    createdAt: new Date(),
-  };
-
-  this.create(currentUrl);
+urlsSchema.statics.getUrl = async function ({ short }: { short: string }) {
+  const data = await this.findOne({ shortURL: short });
+  if (data) {
+    return data;
+  } else {
+    return null;
+  }
 };
 
-const Urls = mongoose.model<UrlsType | UrlsModelType>("Urls", urlsSchema);
-export function generateHash(input: string, len: number) {
-  const hash = crypto.createHash("sha256").update(input).digest("base64url");
-  return hash.slice(0, len);
-}
+// Add a static method to add URL
+urlsSchema.statics.addUrl = async function ({
+  longUrl,
+  alias,
+  topic,
+  authorID,
+}: z.infer<typeof inputURLSchema> & { authorID: string }) {
+  const urlID = uuid().replace(/-/g, "").slice(0, 6);
+  const shortURL = `${URL}/${alias ?? generateHash(longUrl, 6)}`;
+  const currentUrl: UrlsDocument = {
+    urlID,
+    authorID: new mongoose.Types.ObjectId(authorID),
+    url: longUrl,
+    topic: topic ?? "global",
+    shortURL,
+    createdAt: new Date(),
+  } as UrlsDocument;
+
+  return await this.create(currentUrl);
+};
+
+const Urls = mongoose.model<UrlsDocument, UrlsModelType>("Urls", urlsSchema);
 export default Urls;

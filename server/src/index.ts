@@ -6,6 +6,7 @@ import passport from "passport";
 import session from "express-session";
 
 import userRoute from "./routes/user";
+import urlRoute from "./routes/url";
 import mongoose from "mongoose";
 
 export const PORT = process.env.PORT || 3000;
@@ -26,10 +27,12 @@ app.use(
     },
   }),
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(userRoute);
+app.use("/api/shorten", urlRoute);
 
 app.get("/ping", (_req: Request, res: Response) => {
   res.send("pong");
