@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 import { urlschema } from "../lib/zod";
 import { z } from "zod";
-import { v4 as uudi } from "uuid";
+import { v4 as uuid } from "uuid";
 import { URL } from "..";
 import crypto from "crypto";
 
@@ -49,7 +49,7 @@ urlsSchema.statics.addUrl = async function ({
   alias?: string;
 }) {
   const currentUrl: z.infer<typeof urlschema> = {
-    urlID: uudi().replace(/-/g, "").slice(0.6),
+    urlID: uuid().replace(/-/g, "").slice(0.6),
     authorID,
     url,
     topic: topic ? topic : "global",
