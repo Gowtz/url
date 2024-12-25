@@ -19,7 +19,7 @@ export const urlschema = z.object({
 });
 
 export const analyticsSchema = z.object({
-  clickID: z.string(),
+  id: z.string(),
   urlID: z.string(),
   user: z.string(),
   timeStamp: z.date(),

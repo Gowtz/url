@@ -3,6 +3,7 @@ import { z } from "zod";
 import Urls from "../model/url";
 import { URL } from "..";
 import User from "../model/user";
+import Analytics from "../model/analytics";
 
 export const inputURLSchema = z.object({
   longUrl: z.string().url(),
@@ -13,6 +14,7 @@ export const shorten = async (req: Request, res: Response) => {
   const { longUrl, alias, topic } = req.body;
   const googleID = "111879321346623333335";
   const authorID = await User.findOne({ googleId: googleID });
+
   if (authorID) {
     const data = inputURLSchema.safeParse({ longUrl, alias, topic });
     if (data.success) {
@@ -34,8 +36,14 @@ export const shorten = async (req: Request, res: Response) => {
 
 export const redirect = async (req: Request, res: Response) => {
   const hash = req.params.hash;
+  const userIP = res.locals.ip;
+  const osType = res.locals.os;
+  const deviceType = res.locals.device || "default";
   const data = await Urls.getUrl({ short: `${URL}/${hash}` });
   if (data) {
+    // console.log({ urlID: data.id, deviceType, osType, userIP });
+    // Add Analytics
+    await Analytics.addOne({ urlID: data.id, deviceType, osType, userIP });
     res.redirect(data.url);
   } else {
     res.send(
