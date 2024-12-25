@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { z } from "zod";
 import Urls from "../model/url";
 import { URL } from "..";
+import User from "../model/user";
 
 export const inputURLSchema = z.object({
   longUrl: z.string().url(),
@@ -10,17 +11,24 @@ export const inputURLSchema = z.object({
 });
 export const shorten = async (req: Request, res: Response) => {
   const { longUrl, alias, topic } = req.body;
-  const data = inputURLSchema.safeParse({ longUrl, alias, topic });
-  if (data.success) {
-    await Urls.addUrl({
-      longUrl,
-      alias,
-      topic,
-      authorID: res.locals.user,
-    });
-    res.status(200).json(data.data);
+  const googleID = "111879321346623333335";
+  const authorID = await User.findOne({ googleId: googleID });
+  if (authorID) {
+    const data = inputURLSchema.safeParse({ longUrl, alias, topic });
+    if (data.success) {
+      await Urls.addUrl({
+        longUrl,
+        alias,
+        topic,
+        authorID: authorID.id,
+      });
+      console.log(res.locals.user);
+      res.status(200).json(data.data);
+    } else {
+      res.status(401).json(data.error);
+    }
   } else {
-    res.status(401).json(data.error);
+    res.send(authorID);
   }
 };
 
@@ -28,7 +36,7 @@ export const redirect = async (req: Request, res: Response) => {
   const hash = req.params.hash;
   const data = await Urls.getUrl({ short: `${URL}/${hash}` });
   if (data) {
-    res.redirect(data.shortURL);
+    res.redirect(data.url);
   } else {
     res.send(
       `<h1 style="font-size:3rem;text-align:center;margin:5rem;font-family:sans-serif">No Url Found</h1><h3 style="text-align:center">Create new URL</h3>`,

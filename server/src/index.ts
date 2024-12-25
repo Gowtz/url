@@ -13,7 +13,12 @@ export const PORT = process.env.PORT || 3000;
 export const URL = `${process.env.URL}:${PORT}`;
 import "./lib/auth";
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONT_URL, // React app URL
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

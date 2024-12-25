@@ -64,6 +64,9 @@ urlsSchema.statics.addUrl = async function ({
   topic,
   authorID,
 }: z.infer<typeof inputURLSchema> & { authorID: string }) {
+  if (!authorID || !mongoose.Types.ObjectId.isValid(authorID)) {
+    throw new Error("Invalid authorID");
+  }
   const urlID = uuid().replace(/-/g, "").slice(0, 6);
   const shortURL = `${URL}/${alias ?? generateHash(longUrl, 6)}`;
   const currentUrl: UrlsDocument = {
