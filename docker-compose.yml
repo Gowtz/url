@@ -1,0 +1,36 @@
+services:
+  mongodb:
+    image: mongo:7.0.16-jammy
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  redis:
+    image: redis:alpine3.20
+    restart: always
+
+  server:
+    build: ./server
+    restart: always
+    ports:
+      - "6969:6969"
+    environment:
+      MONGO_URI: mongodb://root:example@mongodb:27017/
+      PORT: 6969
+      URL: http://localhost
+      FRONT_URL: http://localhost:4173
+      GOOGLE_CLIENT_ID: YOUR GOOGLE ID
+      GOOGLE_CLIENT_SECRET: YOUR GOOGLE SECRET
+      SESSION_SECRET: verysecret
+      REDIS: redis://redis:6379
+
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - "5173:5173"
+volumes:
+  mongo_data:
