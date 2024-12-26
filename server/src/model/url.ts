@@ -80,7 +80,7 @@ urlsSchema.statics.addUrl = async function ({
     url: longUrl,
     topic: topic ?? "global",
     shortURL,
-    alias,
+    alias: alias ? alias : generateHash(longUrl, 6),
     createdAt: new Date(),
   } as UrlsDocument;
 
