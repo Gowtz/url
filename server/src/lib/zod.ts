@@ -14,6 +14,7 @@ export const urlschema = z.object({
   authorID: z.string(),
   url: z.string().url(),
   shortURL: z.string().url(),
+  alias: z.string(),
   createdAt: z.date(),
   topic: z.string().optional(),
 });
@@ -21,7 +22,7 @@ export const urlschema = z.object({
 export const analyticsSchema = z.object({
   id: z.string(),
   urlID: z.string(),
-  user: z.string(),
+  userIP: z.string(),
   timeStamp: z.date(),
   osType: z.string(),
   deviceType: z.string(),

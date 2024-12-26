@@ -10,6 +10,8 @@ export const inputURLSchema = z.object({
   alias: z.string().optional(),
   topic: z.string().optional(),
 });
+
+// Create new short Url
 export const shorten = async (req: Request, res: Response) => {
   const { longUrl, alias, topic } = req.body;
   const googleID = "111879321346623333335";
@@ -34,14 +36,14 @@ export const shorten = async (req: Request, res: Response) => {
   }
 };
 
+// Redirect to Full URL
 export const redirect = async (req: Request, res: Response) => {
   const hash = req.params.hash;
   const userIP = res.locals.ip;
   const osType = res.locals.os;
   const deviceType = res.locals.device || "default";
-  const data = await Urls.getUrl({ short: `${URL}/${hash}` });
+  const data = await Urls.getUrl({ alias: hash });
   if (data) {
-    // console.log({ urlID: data.id, deviceType, osType, userIP });
     // Add Analytics
     await Analytics.addOne({ urlID: data.id, deviceType, osType, userIP });
     res.redirect(data.url);

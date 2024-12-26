@@ -6,6 +6,7 @@ import passport from "passport";
 import session from "express-session";
 
 import userRoute from "./routes/user";
+import analyticRoute from "./routes/analytics";
 import urlRoute from "./routes/url";
 import mongoose from "mongoose";
 
@@ -38,6 +39,7 @@ app.use(passport.session());
 
 app.use(userRoute);
 app.use("/api/shorten", urlRoute);
+app.use("/api/analytics", analyticRoute);
 
 app.get("/ping", (_req: Request, res: Response) => {
   res.send("pong");

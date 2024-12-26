@@ -22,7 +22,7 @@ export interface UrlsDocument extends Document, Omit<UrlsType, "authorID"> {
 
 // Model Type
 export interface UrlsModelType extends Model<UrlsDocument> {
-  getUrl({ short }: { short: string }): Promise<UrlsDocument | null>;
+  getUrl({ alias }: { alias: string }): Promise<UrlsDocument | null>;
   addUrl({
     longUrl,
     alias,
@@ -46,10 +46,15 @@ const urlsSchema = new mongoose.Schema<UrlsDocument>({
     type: String,
     required: false,
   },
+  alias: {
+    type: String,
+    unique: true,
+    required: true,
+  },
 });
 
-urlsSchema.statics.getUrl = async function ({ short }: { short: string }) {
-  const data = await this.findOne({ shortURL: short });
+urlsSchema.statics.getUrl = async function ({ alias }: { alias: string }) {
+  const data = await this.findOne({ alias });
   if (data) {
     return data;
   } else {
@@ -68,13 +73,14 @@ urlsSchema.statics.addUrl = async function ({
     throw new Error("Invalid authorID");
   }
   const urlID = uuid().replace(/-/g, "").slice(0, 6);
-  const shortURL = `${URL}/${alias ?? generateHash(longUrl, 6)}`;
+  const shortURL = `${URL}/api/shorten/${alias ?? generateHash(longUrl, 6)}`;
   const currentUrl: UrlsDocument = {
     urlID,
     authorID: new mongoose.Types.ObjectId(authorID),
     url: longUrl,
     topic: topic ?? "global",
     shortURL,
+    alias,
     createdAt: new Date(),
   } as UrlsDocument;
 
