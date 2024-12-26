@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc -b && node dist",
+    "start": "node dist",
+    "build": "tsc -b",
     "dev": "tsc -w & nodemon dist",
     "lint": "eslint src"
   },

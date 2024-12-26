@@ -16,7 +16,7 @@ export const URL = `${process.env.URL}:${PORT}`;
 import "./lib/auth";
 
 const client = createClient({
-  url: "redis://localhost:6379", // Redis URL
+  url: process.env.REDIS || "redis://localhost:6379",
 });
 
 // Connect to Redis
@@ -87,8 +87,8 @@ mongoose
       console.log(`The server is running on  ${process.env.URL}:${PORT}`),
     ),
   )
-  .catch(() =>
+  .catch((err) =>
     console.log(
-      "error while connection to the database make sure the database is connected",
+      `error while connection to the database make sure the database is connecting \n ${err} \n`,
     ),
   );
