@@ -9,10 +9,30 @@ import userRoute from "./routes/user";
 import analyticRoute from "./routes/analytics";
 import urlRoute from "./routes/url";
 import mongoose from "mongoose";
-
+import { createClient } from "redis";
+import { RedisStore } from "connect-redis";
 export const PORT = process.env.PORT || 3000;
 export const URL = `${process.env.URL}:${PORT}`;
 import "./lib/auth";
+
+const client = createClient({
+  url: "redis://localhost:6379", // Redis URL
+});
+
+// Connect to Redis
+client
+  .connect()
+  .then(() => {
+    console.log("Connected to Redis");
+  })
+  .catch((err) => {
+    console.error("Error connecting to Redis:", err);
+  });
+
+// Handle Redis connection errors
+client.on("error", (err) => {
+  console.error(`Redis error: ${err}`);
+});
 const app = express();
 app.use(
   cors({
@@ -26,6 +46,7 @@ app.use(cookieParser());
 app.use(
   session({
     secret: process.env.SESSION_SECRET as string,
+    store: new RedisStore({ client }),
     saveUninitialized: false,
     resave: false,
     cookie: {
