@@ -2,17 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { useRef } from "react";
+import { FormEvent, useRef } from "react";
 import axios from "axios";
 
 export default function CreateURL() {
-  const longurl = useRef(null);
-  const alias = useRef(null);
-  const topic = useRef(null);
-  const handleSubmit = (e) => {
+  const longurl = useRef<HTMLInputElement | null>(null);
+  const alias = useRef<HTMLInputElement | null>(null);
+  const topic = useRef<HTMLInputElement | null>(null);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const response = axios
+    axios
       .post(
         "http://localhost:6969/api/shorten",
         {
