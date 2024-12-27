@@ -21,9 +21,9 @@ services:
       MONGO_URI: mongodb://root:example@mongodb:27017/
       PORT: 6969
       URL: http://localhost
-      FRONT_URL: http://localhost:4173
       GOOGLE_CLIENT_ID: YOUR GOOGLE ID
       GOOGLE_CLIENT_SECRET: YOUR GOOGLE SECRET
+      FRONT_URL: http://localhost:5173
       SESSION_SECRET: verysecret
       REDIS: redis://redis:6379
 
