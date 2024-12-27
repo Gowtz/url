@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import "dotenv/config";
 import passport from "passport";
 import session from "express-session";
-
 import userRoute from "./routes/user";
 import analyticRoute from "./routes/analytics";
 import urlRoute from "./routes/url";
@@ -14,6 +13,7 @@ import { RedisStore } from "connect-redis";
 export const PORT = process.env.PORT || 3000;
 export const URL = `${process.env.URL}:${PORT}`;
 import "./lib/auth";
+import swaggerDocs from "./lib/swagger";
 
 const client = createClient({
   url: process.env.REDIS || "redis://localhost:6379",
@@ -36,7 +36,7 @@ client.on("error", (err) => {
 const app = express();
 app.use(
   cors({
-    origin: process.env.FRONT_URL, // React app URL
+    origin: [`${process.env.FRONT_URL}`, `${URL}`], // React app URL
     credentials: true,
   }),
 );
@@ -83,9 +83,10 @@ app.use(errorhandler);
 mongoose
   .connect(`${process.env.MONGO_URI}`)
   .then(() =>
-    app.listen(PORT, () =>
-      console.log(`The server is running on  ${process.env.URL}:${PORT}`),
-    ),
+    app.listen(PORT, () => {
+      console.log(`The server is running on  ${process.env.URL}:${PORT}`);
+      swaggerDocs(app, PORT as number);
+    }),
   )
   .catch((err) =>
     console.log(

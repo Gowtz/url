@@ -83,7 +83,6 @@ urlsSchema.statics.addUrl = async function ({
     alias: alias ? alias : generateHash(longUrl, 6),
     createdAt: new Date(),
   } as UrlsDocument;
-
   return await this.create(currentUrl);
 };
 

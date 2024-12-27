@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from "express";
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   //@ts-ignore
   const user = req.session.passport?.user;
-  console.log(user);
   const ip = req.ip?.replace("::ffff:", "");
   if (!user) {
     res.redirect("/not-authenticated");
