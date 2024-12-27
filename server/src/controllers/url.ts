@@ -3,6 +3,7 @@ import { z } from "zod";
 import Urls from "../model/url";
 import User from "../model/user";
 import Analytics from "../model/analytics";
+import { client } from "..";
 
 export const inputURLSchema = z.object({
   longUrl: z.string().url(),
@@ -26,6 +27,7 @@ export const shorten = async (req: Request, res: Response) => {
           topic,
           authorID: authorID.id,
         });
+
         res
           .status(200)
           .json({ shortURL: response.shortURL, createdAt: response.createdAt });
@@ -46,16 +48,41 @@ export const redirect = async (req: Request, res: Response) => {
   const userIP = res.locals.ip;
   const osType = res.locals.os;
   const deviceType = res.locals.device || "default";
-  const data = await Urls.getUrl({ alias: hash });
-  if (data) {
-    // Add Analytics
-    await Analytics.addOne({ urlID: data.id, deviceType, osType, userIP });
-    res.status(301).redirect(data.url);
+  const cache = await client.get(`${hash}`);
+  console.log(cache);
+  const cacheURL = cache ? JSON.parse(cache as string) : null;
+
+  console.log(cacheURL);
+  if (cacheURL) {
+    try {
+      await Analytics.addOne({
+        urlID: cacheURL.id,
+        deviceType,
+        osType,
+        userIP,
+      });
+      res.status(301).redirect(cacheURL.url);
+    } catch (error) {
+      console.log("Analytics error");
+    }
   } else {
-    res
-      .status(404)
-      .send(
-        `<h1 style="font-size:3rem;text-align:center;margin:5rem;font-family:sans-serif">No Url Found</h1><h3 style="text-align:center">Create new URL</h3>`,
+    const data = await Urls.getUrl({ alias: hash });
+
+    if (data) {
+      // Add Analytics
+      await Analytics.addOne({ urlID: data.id, deviceType, osType, userIP });
+      await client.set(
+        `${hash}`,
+        JSON.stringify({ url: data.url, id: data.id }),
+        { EX: 3600 },
       );
+      res.status(301).redirect(data.url);
+    } else {
+      res
+        .status(404)
+        .send(
+          `<h1 style="font-size:3rem;text-align:center;margin:5rem;font-family:sans-serif">No Url Found</h1><h3 style="text-align:center">Create new URL</h3>`,
+        );
+    }
   }
 };

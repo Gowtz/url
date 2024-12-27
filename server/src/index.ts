@@ -15,7 +15,7 @@ export const URL = `${process.env.URL}:${PORT}`;
 import "./lib/auth";
 import swaggerDocs from "./lib/swagger";
 
-const client = createClient({
+export const client = createClient({
   url: process.env.REDIS || "redis://localhost:6379",
 });
 
