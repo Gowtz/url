@@ -11,7 +11,9 @@ import mongoose from "mongoose";
 import { createClient } from "redis";
 import { RedisStore } from "connect-redis";
 export const PORT = process.env.PORT || 3000;
-export const URL = `${process.env.URL}:${PORT}`;
+export const URL = process.env.PRODUCTION
+  ? `${process.env.URL}`
+  : `${process.env.URL}:${PORT}`;
 import "./lib/auth";
 import swaggerDocs from "./lib/swagger";
 import rateLimit from "express-rate-limit";

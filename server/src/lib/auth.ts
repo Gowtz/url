@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import User from "../model/user";
+import { URL } from "..";
 
 // // Serialize user into session
 passport.serializeUser((user: any, cb: Function) => {
@@ -25,7 +26,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      callbackURL: `${process.env.URL}/api/auth/callback/google`,
+      callbackURL: `${URL}/api/auth/callback/google`,
     },
     async (
       _accessToken: string,

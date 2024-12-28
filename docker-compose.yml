@@ -26,6 +26,7 @@ services:
       FRONT_URL: http://localhost:5173
       SESSION_SECRET: verysecret
       REDIS: redis://redis:6379
+      PRODUCTION: false
 
   frontend:
     build: ./frontend
