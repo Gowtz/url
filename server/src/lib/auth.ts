@@ -1,6 +1,5 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
-import { URL } from "..";
 import User from "../model/user";
 
 // // Serialize user into session
