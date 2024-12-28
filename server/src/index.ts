@@ -14,12 +14,17 @@ export const PORT = process.env.PORT || 3000;
 export const URL = `${process.env.URL}:${PORT}`;
 import "./lib/auth";
 import swaggerDocs from "./lib/swagger";
+import rateLimit from "express-rate-limit";
 
 export const client = createClient({
   url: process.env.REDIS || "redis://localhost:6379",
 });
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests from this IP, please try again later.",
+});
 
-// Connect to Redis
 client
   .connect()
   .then(() => {
@@ -29,7 +34,6 @@ client
     console.error("Error connecting to Redis:", err);
   });
 
-// Handle Redis connection errors
 client.on("error", (err) => {
   console.error(`Redis error: ${err}`);
 });
@@ -55,6 +59,7 @@ app.use(
   }),
 );
 
+app.use(limiter);
 app.use(passport.initialize());
 app.use(passport.session());
 

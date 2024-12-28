@@ -17,7 +17,15 @@ router.get(
   "/api/auth/callback/google",
   passport.authenticate("google", { failureRedirect: "/not-authenticated" }),
   (_req, res) => {
-    res.json({ msg: "Your are authenticated now" });
+    res.redirect(`${process.env.FRONT_URL}`);
   },
 );
+// Route to check session data
+router.get("/getsession", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({ user: req.user });
+  } else {
+    res.status(401).json({ error: "Not authenticated" });
+  }
+});
 export default router;

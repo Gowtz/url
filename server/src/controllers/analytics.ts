@@ -27,5 +27,21 @@ export const getAnalyticsByTopic = async (req: Request, res: Response) => {
 
 export const getAnalyticsAll = async (_req: Request, res: Response) => {
   const resdata = await getAnalyticsAllPipeline();
-  res.send(resdata);
+  const tot = await Urls.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalUrls: {
+          $sum: 1,
+        },
+      },
+    },
+    {
+      $project: {
+        totalUrls: 1,
+        _id: 0,
+      },
+    },
+  ]);
+  res.send({ ...resdata[0], totalUrl: tot[0].totalUrls });
 };

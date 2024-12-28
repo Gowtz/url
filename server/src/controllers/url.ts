@@ -49,10 +49,8 @@ export const redirect = async (req: Request, res: Response) => {
   const osType = res.locals.os;
   const deviceType = res.locals.device || "default";
   const cache = await client.get(`${hash}`);
-  console.log(cache);
   const cacheURL = cache ? JSON.parse(cache as string) : null;
 
-  console.log(cacheURL);
   if (cacheURL) {
     try {
       await Analytics.addOne({

@@ -4,18 +4,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { FormEvent, useRef } from "react";
 import axios from "axios";
+import { BACK_URL } from "@/lib/utils";
+import { useNavigate } from "react-router";
 
 export default function CreateURL() {
   const longurl = useRef<HTMLInputElement | null>(null);
   const alias = useRef<HTMLInputElement | null>(null);
   const topic = useRef<HTMLInputElement | null>(null);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     axios
       .post(
-        "http://localhost:6969/api/shorten",
+        `${BACK_URL}/api/shorten`,
         {
           longUrl: longurl.current?.value,
           alias: alias.current?.value,
@@ -23,17 +26,12 @@ export default function CreateURL() {
         },
         { withCredentials: true },
       )
-      .then((res) => console.log(res));
-    // console.log({
-    //   longUrl: longurl.current?.value,
-    //   alias: alias.current?.value,
-    //   topic: topic.current?.value,
-    // });
+      .then(() => navigate("/"));
   };
   return (
     <main className="w-full h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit}>
-        <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md">
+        <form onSubmit={handleSubmit}>
           <CardHeader>
             <CardTitle>Create short Url</CardTitle>
           </CardHeader>
@@ -46,8 +44,8 @@ export default function CreateURL() {
             <Input className="my-2" type="text" ref={topic} />
             <Button type="submit">Submit</Button>
           </CardContent>
-        </Card>
-      </form>
+        </form>
+      </Card>
     </main>
   );
 }
