@@ -1,8 +1,10 @@
 # Scalabel url shortener
 
-this is hosted in AWS
-[http://url.gowtz.tech](http://url.gowtz.tech)
-[http://url.gowtz.tech:6969](http://url.gowtz.tech:6969)
+This is hosted in AWS
+
+Frontend end [http://url.gowtz.tech](http://url.gowtz.tech)
+
+Backend end [http://url.gowtz.tech:6969](http://url.gowtz.tech:6969)
 
 > Note please change frontend url from `https` to `http` in the browser
 
